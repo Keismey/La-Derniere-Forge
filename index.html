@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>La Dernière Forge</title>
+<meta name="description" content="Forge, mine et chasse : rallume la dernière forge et brise la malédiction de la Rouille.">
+<meta name="theme-color" content="#15110e">
+<!--PWA-->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Dernière Forge">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!--/PWA-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:wght@400;500;700;800&family=Grenze+Gotisch:wght@600;800&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <section class="screen title" id="s-title"></section>
+  <section class="screen hub" id="s-hub" hidden></section>
+  <section class="screen mg" id="s-smelt" hidden></section>
+  <section class="screen mg" id="s-forge" hidden></section>
+  <section class="screen mg" id="s-mine" hidden></section>
+  <section class="screen mg combat" id="s-combat" hidden></section>
+  <section class="screen mg shop" id="s-shop" hidden></section>
+  <section class="screen mg refine" id="s-refine" hidden></section>
+</div>
+<div id="dialog" class="dialog" hidden></div>
+<div id="modal" class="modal" hidden></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="js/i18n.js"></script>
+<script src="js/data.js"></script>
+<script src="js/data_en.js"></script>
+<script src="js/assets.js"></script>
+<script src="js/core.js"></script>
+<script src="js/smelt.js"></script>
+<script src="js/forge.js"></script>
+<script src="js/mine.js"></script>
+<script src="js/combat.js"></script>
+<script src="js/shop.js"></script>
+<script src="js/refine.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
