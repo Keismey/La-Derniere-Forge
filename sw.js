@@ -17,6 +17,7 @@ self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
+  if (url.hostname === 'static.cloudflareinsights.com') return; // suivi Cloudflare : toujours le réseau, jamais le cache
   const asset = url.pathname.includes('/assets/') || url.hostname.includes('gstatic') || url.hostname.includes('googleapis');
   if (asset) {
     e.respondWith(caches.match(req).then(hit => hit || fetch(req).then(res => {
