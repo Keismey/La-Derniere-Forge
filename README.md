@@ -46,4 +46,5 @@ pour afficher la progression, sans jamais l'écrire.
 | `js/main.js` | logo du studio, écran titre, village, journal, chapitres |
 | `assets/img/` | décors, monstres, portraits, icônes, effets, logo du studio |
 | `assets/musique/` | musiques par lieu |
+| `fonts/` | Alegreya Sans et Grenze Gotisch, hébergées avec le jeu (licence SIL OFL, voir `fonts/OFL-*.txt`) |
 | `sw.js` | mode hors ligne |
