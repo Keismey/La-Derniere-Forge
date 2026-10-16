@@ -31,6 +31,7 @@
       rt = setTimeout(() => { if (G.current === 's-hub' && G.$('#hub-body')) keepScroll(); }, 120);
     };
     buildTitle();
+    patchNotesAuto();
     G.show('s-title');
     // service worker (hors artifact)
     if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !window.__ARTIFACT__) {
@@ -859,7 +860,7 @@
   async function openOptions() {
     const v = await G.modal({
       title: 'Options', cls: 'opt-card', body: optionsHTML(),
-      buttons: [{ label: G.L('Écran titre', 'Title screen'), value: 'title' }, { label: G.L('Fermer', 'Close'), value: true, primary: true }],
+      buttons: [{ label: G.L('Notes de mise à jour', 'Patch notes'), value: 'pn' }, { label: G.L('Écran titre', 'Title screen'), value: 'title' }, { label: G.L('Fermer', 'Close'), value: true, primary: true }],
       onOpen: m => {
         const card = m.firstElementChild;   // écouteurs posés sur la carte : ils disparaissent avec elle
         card.addEventListener('change', e => {
@@ -882,6 +883,31 @@
       },
     });
     if (v === 'title') { G.save(); G.stopLoop(); G.show('s-title'); buildTitle(); }
+    if (v === 'pn') { await showPatchNotes(); openOptions(); }
+  }
+
+  /* ---------- notes de mise à jour (la plus récente en premier) ---------- */
+  const PATCH_NOTES = [
+    { v: '1.0.2', d: ['16 octobre 2026', '16 October 2026'],
+      fr: ['Nouveau : ces notes de mise à jour, dans les Options.', 'Les polices sont fournies avec le jeu : affichage plus rapide et identique hors ligne.', 'Le jeu se met à jour plus sûrement à chaque ouverture.'],
+      en: ['New: these patch notes, in Options.', 'Fonts now ship with the game: faster display, identical offline.', 'The game updates more reliably each time you open it.'] },
+    { v: '1.0.1', d: ['12 octobre 2026', '12 October 2026'],
+      fr: ['Nouvelle icône d\'application, peinte.'], en: ['New painted app icon.'] },
+    { v: '1.0', d: ['12 octobre 2026', '12 October 2026'],
+      fr: ['Première version : la mine, la fonte, l\'affinage, la forge, la boutique et les combats.'],
+      en: ['First release: the mine, smelting, refining, the forge, the shop and the battles.'] },
+  ];
+  const PN_KEY = 'forge-pn';
+  function showPatchNotes() {
+    try { localStorage.setItem(PN_KEY, PATCH_NOTES[0].v); } catch (e) { /* stockage indisponible */ }
+    const body = PATCH_NOTES.map((p, i) => `<details${i ? '' : ' open'}><summary><b>${G.L('Version', 'Version')} ${p.v}</b> · ${G.L(p.d[0], p.d[1])}</summary><ul style="margin:6px 0 4px;padding-left:20px">${(G.lang === 'en' ? p.en : p.fr).map(l => `<li style="margin-bottom:4px">${l}</li>`).join('')}</ul></details>`).join('');
+    return G.modal({ title: G.L('Notes de mise à jour', 'Patch notes'), body, buttons: [{ label: G.L('Fermer', 'Close'), value: true, primary: true }] });
+  }
+  /* Une fois après chaque mise à jour, seulement pour un joueur qui a déjà une partie. */
+  function patchNotesAuto() {
+    let seen = null; try { seen = localStorage.getItem(PN_KEY); } catch (e) { return; }
+    if (seen === PATCH_NOTES[0].v) return;
+    if (G.hasSave()) showPatchNotes(); else try { localStorage.setItem(PN_KEY, PATCH_NOTES[0].v); } catch (e) { /* stockage indisponible */ }
   }
 
   function keepScroll() {
