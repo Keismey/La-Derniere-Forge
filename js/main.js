@@ -889,8 +889,8 @@
   /* ---------- notes de mise à jour (la plus récente en premier) ---------- */
   const PATCH_NOTES = [
     { v: '1.0.3', d: ['19 octobre 2026', '19 October 2026'],
-      fr: ['Le bouton retour du téléphone ne quitte plus le jeu d’un coup : il ferme les fenêtres, revient à l’onglet Forge, puis propose de revenir à l’écran titre. Depuis l’écran titre, il ramène au hub Keismey Studio. Dans la mine, il propose de remonter ; en chasse, de fuir.'],
-      en: ['The phone’s back button no longer leaves the game at once: it closes windows, returns to the Forge tab, then offers to go back to the title screen. From the title screen, it takes you to the Keismey Studio hub. In the mine it offers to go up; in a hunt, to flee.'] },
+      fr: ['Le bouton retour du téléphone ne quitte plus le jeu d’un coup : il ferme les fenêtres, revient à l’onglet Forge, puis propose de revenir à l’écran titre. Depuis l’écran titre, il propose d’aller au hub Keismey Studio. Dans la mine, il propose de remonter ; en chasse, de fuir.'],
+      en: ['The phone’s back button no longer leaves the game at once: it closes windows, returns to the Forge tab, then offers to go back to the title screen. From the title screen, it offers to go to the Keismey Studio hub. In the mine it offers to go up; in a hunt, to flee.'] },
     { v: '1.0.2', d: ['16 octobre 2026', '16 October 2026'],
       fr: ['Nouveau : ces notes de mise à jour, dans les Options.', 'Les polices sont fournies avec le jeu : affichage plus rapide et identique hors ligne.', 'Le jeu se met à jour plus sûrement à chaque ouverture.'],
       en: ['New: these patch notes, in Options.', 'Fonts now ship with the game: faster display, identical offline.', 'The game updates more reliably each time you open it.'] },
@@ -1078,7 +1078,10 @@
     }
     if (!G.$('#dialog').hidden) return;                      // dialogue d'histoire : il faut le lire
     const cur = G.current;
-    if (cur === 's-title') return 'hub';
+    if (cur === 's-title') {
+      backAsk(G.L('Quitter La Dernière Forge ?', 'Leave The Last Forge?'), G.L('Ta partie est enregistrée. Tu retrouveras les autres jeux de Keismey Studio sur le hub.', 'Your game is saved. You will find the other Keismey Studio games on the hub.'), G.L('Aller au hub', 'Go to the hub'), () => KSBack.toHub());
+      return;
+    }
     if (cur === 's-mine') {
       const up = G.$('#mn-up');
       if (up) backAsk(G.L('Remonter ?', 'Go up?'), G.L('Tu remontes à la surface avec ce que tu as extrait.', 'You go back up with what you have mined.'), G.L('Remonter', 'Go up'), () => up.click());
