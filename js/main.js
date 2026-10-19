@@ -853,14 +853,17 @@
     const st = G.state.settings;
     return `<div class="opts">
       <label class="tgl"><input type="checkbox" data-opt="music" ${st.music ? 'checked' : ''}><span>${G.L('Musique', 'Music')}</span><input type="range" class="vol" data-vol="musicVol" min="0" max="1" step="0.05" value="${st.musicVol}" aria-label="${G.L('Volume de la musique', 'Music volume')}"></label>
-      <label class="tgl"><input type="checkbox" data-opt="sfx" ${st.sfx ? 'checked' : ''}><span>${G.L('Effets', 'Sound effects')}</span><input type="range" class="vol" data-vol="sfxVol" min="0" max="1" step="0.05" value="${st.sfxVol}" aria-label="${G.L('Volume des effets', 'Sound effects volume')}"></label>
+      <label class="tgl"><input type="checkbox" data-opt="sfx" ${st.sfx ? 'checked' : ''}><span>${G.L('Bruitages', 'Sound effects')}</span><input type="range" class="vol" data-vol="sfxVol" min="0" max="1" step="0.05" value="${st.sfxVol}" aria-label="${G.L('Volume des bruitages', 'Sound effects volume')}"></label>
       <label class="tgl"><input type="checkbox" data-opt="vibe" ${st.vibe ? 'checked' : ''}><span>${G.L('Vibrations', 'Vibration')}</span></label>
-      <div class="tgl lang-row"><span>${G.L('Langue', 'Language')}</span><div class="seg" style="flex:1">${[['fr', 'Français'], ['en', 'English']].map(([k, lab]) => `<button type="button" class="seg-b ${G.lang === k ? 'on' : ''}" data-lang="${k}">${lab}</button>`).join('')}</div></div></div>`;
+      <div class="tgl lang-row"><span>${G.L('Langue', 'Language')}</span><div class="seg" style="flex:1">${[['fr', 'Français'], ['en', 'English']].map(([k, lab]) => `<button type="button" class="seg-b ${G.lang === k ? 'on' : ''}" data-lang="${k}">${lab}</button>`).join('')}</div></div></div>
+      <p class="opt-ver">v${PATCH_NOTES[0].v} · Keismey Studio</p>`;
   }
   async function openOptions() {
     const v = await G.modal({
       title: 'Options', cls: 'opt-card', body: optionsHTML(),
-      buttons: [{ label: G.L('Notes de mise à jour', 'Patch notes'), value: 'pn' }, { label: G.L('Écran titre', 'Title screen'), value: 'title' }, { label: G.L('Fermer', 'Close'), value: true, primary: true }],
+      buttons: [{ label: G.L('Notes de mise à jour', 'Patch notes'), value: 'pn' }, { label: G.L('Sauvegarde (exporter / importer)', 'Save (export / import)'), value: 'save' },
+        { label: G.L('Signaler un bug', 'Report a bug'), value: 'bug' }, { label: G.L('Soutenir le studio', 'Support the studio'), value: 'sup' },
+        { label: G.L('Écran titre', 'Title screen'), value: 'title' }, { label: G.L('Fermer', 'Close'), value: true, primary: true }],
       onOpen: m => {
         const card = m.firstElementChild;   // écouteurs posés sur la carte : ils disparaissent avec elle
         card.addEventListener('change', e => {
@@ -884,10 +887,16 @@
     });
     if (v === 'title') { G.save(); G.stopLoop(); G.show('s-title'); buildTitle(); }
     if (v === 'pn') { await showPatchNotes(); openOptions(); }
+    if (v === 'save' && window.KS) { openOptions(); KS.saveDialog({ keys: ['derniere-forge-save-v1'], lang: G.lang === 'en' ? 'en' : 'fr', save: G.save, accent: '#e0892f' }); }
+    if (v === 'bug' && window.KS) KS.bug('La Dernière Forge', G.lang === 'en' ? 'en' : 'fr');
+    if (v === 'sup' && window.KS) { KS.support(); openOptions(); }
   }
 
   /* ---------- notes de mise à jour (la plus récente en premier) ---------- */
   const PATCH_NOTES = [
+    { v: '1.0.4', d: ['19 octobre 2026', '19 October 2026'],
+      fr: ['Options : sauvegarde à exporter ou importer (pour changer d’appareil), signalement de bug, soutien au studio et numéro de version.', 'Le navigateur est invité à garder ta sauvegarde même quand il fait du ménage.'],
+      en: ['Options: a save you can export or import (to switch devices), bug reports, studio support and the version number.', 'The browser is asked to keep your save even when it clears space.'] },
     { v: '1.0.3', d: ['19 octobre 2026', '19 October 2026'],
       fr: ['Le bouton retour du téléphone ne quitte plus le jeu d’un coup : il ferme les fenêtres, revient à l’onglet Forge, puis propose de revenir à l’écran titre. Depuis l’écran titre, il propose d’aller au hub Keismey Studio. Dans la mine, il propose de remonter ; en chasse, de fuir.'],
       en: ['The phone’s back button no longer leaves the game at once: it closes windows, returns to the Forge tab, then offers to go back to the title screen. From the title screen, it offers to go to the Keismey Studio hub. In the mine it offers to go up; in a hunt, to flee.'] },

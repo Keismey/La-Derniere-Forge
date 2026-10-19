@@ -1,8 +1,8 @@
 /* Service worker : le jeu fonctionne hors ligne une fois chargé.
    Change VERSION à chaque mise en ligne pour forcer la mise à jour. */
-const VERSION = 'forge-v1.0.3b';
+const VERSION = 'forge-v1.0.4';
 const CORE = [
-  './', './index.html', './ks-back.js', './css/style.css', './manifest.webmanifest',
+  './', './index.html', './ks-studio.js', './ks-back.js', './css/style.css', './manifest.webmanifest',
   './js/i18n.js', './js/data.js', './js/data_en.js', './js/assets.js', './js/core.js', './js/smelt.js', './js/forge.js', './js/mine.js', './js/combat.js', './js/shop.js', './js/refine.js', './js/main.js',
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png',
   './fonts/fonts.css', './fonts/alegreya-sans-400.woff', './fonts/alegreya-sans-500.woff', './fonts/alegreya-sans-700.woff', './fonts/alegreya-sans-800.woff', './fonts/grenze-gotisch-600.woff', './fonts/grenze-gotisch-800.woff',
