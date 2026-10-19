@@ -888,6 +888,9 @@
 
   /* ---------- notes de mise à jour (la plus récente en premier) ---------- */
   const PATCH_NOTES = [
+    { v: '1.0.3', d: ['19 octobre 2026', '19 October 2026'],
+      fr: ['Le bouton retour du téléphone ne quitte plus le jeu d’un coup : il ferme les fenêtres, revient à l’onglet Forge, puis propose de revenir à l’écran titre. Depuis l’écran titre, il ramène au hub Keismey Studio. Dans la mine, il propose de remonter ; en chasse, de fuir.'],
+      en: ['The phone’s back button no longer leaves the game at once: it closes windows, returns to the Forge tab, then offers to go back to the title screen. From the title screen, it takes you to the Keismey Studio hub. In the mine it offers to go up; in a hunt, to flee.'] },
     { v: '1.0.2', d: ['16 octobre 2026', '16 October 2026'],
       fr: ['Nouveau : ces notes de mise à jour, dans les Options.', 'Les polices sont fournies avec le jeu : affichage plus rapide et identique hors ligne.', 'Le jeu se met à jour plus sûrement à chaque ouverture.'],
       en: ['New: these patch notes, in Options.', 'Fonts now ship with the game: faster display, identical offline.', 'The game updates more reliably each time you open it.'] },
@@ -1055,6 +1058,39 @@
       buttons: [{ label: btn || G.L('Retour au village', 'Back to the village'), value: true, primary: true }],
     });
   };
+
+  /* ---------- bouton retour du téléphone (voir ks-back.js) ----------
+     fenêtre ouverte → fermée (si elle a un bouton pour ça) ; onglet → Forge ; Forge → écran titre (confirmé) ;
+     écran titre → hub ; mine → remonter (confirmé) ; chasse → fuir (confirmé par le jeu) ;
+     fonte, forge, affûtage, journée d'échoppe : ignoré (les matériaux sont déjà engagés). */
+  const DISMISS = ['Fermer', 'Annuler', 'Rester', 'Close', 'Cancel', 'Stay'];
+  function backAsk(title, body, yes, fn) {
+    G.modal({ title, body: `<p>${body}</p>`, buttons: [{ label: G.L('Annuler', 'Cancel'), value: false }, { label: yes, value: true, primary: true }] })
+      .then(ok => { if (ok) fn(); });
+  }
+  function onBack() {
+    const m = G.$('#modal');
+    if (!m.hidden) {
+      const bs = G.$$('.modal-btns .btn', m).filter(b => !b.disabled);
+      const b = bs.length === 1 ? bs[0] : bs.find(x => DISMISS.includes(x.textContent.trim()));
+      if (b) b.click();
+      return;
+    }
+    if (!G.$('#dialog').hidden) return;                      // dialogue d'histoire : il faut le lire
+    const cur = G.current;
+    if (cur === 's-title') return 'hub';
+    if (cur === 's-mine') {
+      const up = G.$('#mn-up');
+      if (up) backAsk(G.L('Remonter ?', 'Go up?'), G.L('Tu remontes à la surface avec ce que tu as extrait.', 'You go back up with what you have mined.'), G.L('Remonter', 'Go up'), () => up.click());
+      return;
+    }
+    if (cur === 's-combat') { const f = G.$('#s-combat [data-a="flee"]:not([disabled])'); if (f) f.click(); return; }
+    if (cur !== 's-hub') { G.toast(G.L('Termine d’abord ce que tu as commencé.', 'Finish what you started first.')); return; }
+    if (tab !== 'forge') { tab = 'forge'; renderHub(); G.$('#hub-body').scrollTop = 0; return; }
+    backAsk(G.L('Retour à l’écran titre ?', 'Back to the title screen?'), G.L('Ta partie est enregistrée.', 'Your game is saved.'), G.L('Écran titre', 'Title screen'),
+      () => { G.save(); G.stopLoop(); G.show('s-title'); buildTitle(); });
+  }
+  if (window.KSBack) KSBack.init({ back: onBack, lang: () => (G.lang === 'en' ? 'en' : 'fr') });
 
   window.addEventListener('load', () => { boot(); bindHub(G.$('#s-hub')); });
 })();
