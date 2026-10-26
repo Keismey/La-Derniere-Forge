@@ -78,11 +78,13 @@
         <div class="title-btns">
           ${has ? `<button class="btn primary big" id="t-continue">${G.L('Continuer', 'Continue')} <small>${G.esc(G.state.name)} · ${G.state.ended ? G.L('Épilogue', 'Epilogue') : G.L('Chapitre ', 'Chapter ') + (ROMAN[G.state.ch] || 'V')}</small></button>` : ''}
           <button class="btn ${has ? '' : 'primary'} big" id="t-new">${G.L('Nouvelle partie', 'New game')}</button>
+          <button class="btn" id="t-opt">Options</button>
         </div>
         <p class="title-foot">${G.L('Avec le son, c’est mieux.', 'Best played with sound.')}</p>
       </div>`;
     titleBg();
     embers(G.$('#title-embers'));
+    G.$('#t-opt').onclick = () => { G.audioInit(); G.sfx('tick'); openOptions(true); };
     if (has) G.$('#t-continue').onclick = () => { G.audioInit(); G.sfx('clang', 2); enterGame(); };
     G.$('#t-new').onclick = async () => {
       G.audioInit();
@@ -856,14 +858,15 @@
       <label class="tgl"><input type="checkbox" data-opt="sfx" ${st.sfx ? 'checked' : ''}><span>${G.L('Bruitages', 'Sound effects')}</span><input type="range" class="vol" data-vol="sfxVol" min="0" max="1" step="0.05" value="${st.sfxVol}" aria-label="${G.L('Volume des bruitages', 'Sound effects volume')}"></label>
       <label class="tgl"><input type="checkbox" data-opt="vibe" ${st.vibe ? 'checked' : ''}><span>${G.L('Vibrations', 'Vibration')}</span></label>
       <div class="tgl lang-row"><span>${G.L('Langue', 'Language')}</span><div class="seg" style="flex:1">${[['fr', 'Français'], ['en', 'English']].map(([k, lab]) => `<button type="button" class="seg-b ${G.lang === k ? 'on' : ''}" data-lang="${k}">${lab}</button>`).join('')}</div></div></div>
-      <p class="opt-ver">v${PATCH_NOTES[0].v} · Keismey Studio</p>`;
+      <p class="opt-ver">v${PATCH_NOTES[0].v} · Keismey Studio</p>
+      <p class="opt-ver">${G.L('Conception et direction : Keismey · Développé avec l’aide d’outils IA', 'Design and direction: Keismey · Developed with the help of AI tools')}</p>`;
   }
-  async function openOptions() {
+  async function openOptions(fromTitle) {
     const v = await G.modal({
       title: 'Options', cls: 'opt-card', body: optionsHTML(),
       buttons: [{ label: G.L('Notes de mise à jour', 'Patch notes'), value: 'pn' }, { label: G.L('Sauvegarde (exporter / importer)', 'Save (export / import)'), value: 'save' },
         { label: G.L('Signaler un bug', 'Report a bug'), value: 'bug' }, { label: G.L('Soutenir le studio', 'Support the studio'), value: 'sup' },
-        { label: G.L('Écran titre', 'Title screen'), value: 'title' }, { label: G.L('Fermer', 'Close'), value: true, primary: true }],
+        ...(fromTitle ? [] : [{ label: G.L('Écran titre', 'Title screen'), value: 'title' }]), { label: G.L('Fermer', 'Close'), value: true, primary: true }],
       onOpen: m => {
         const card = m.firstElementChild;   // écouteurs posés sur la carte : ils disparaissent avec elle
         card.addEventListener('change', e => {
@@ -886,14 +889,17 @@
       },
     });
     if (v === 'title') { G.save(); G.stopLoop(); G.show('s-title'); buildTitle(); }
-    if (v === 'pn') { await showPatchNotes(); openOptions(); }
-    if (v === 'save' && window.KS) { openOptions(); KS.saveDialog({ keys: ['derniere-forge-save-v1'], lang: G.lang === 'en' ? 'en' : 'fr', save: G.save, accent: '#e0892f' }); }
+    if (v === 'pn') { await showPatchNotes(); openOptions(fromTitle); }
+    if (v === 'save' && window.KS) { openOptions(fromTitle); KS.saveDialog({ keys: ['derniere-forge-save-v1'], lang: G.lang === 'en' ? 'en' : 'fr', save: G.save, accent: '#e0892f' }); }
     if (v === 'bug' && window.KS) KS.bug('La Dernière Forge', G.lang === 'en' ? 'en' : 'fr');
-    if (v === 'sup' && window.KS) { KS.support(); openOptions(); }
+    if (v === 'sup' && window.KS) { KS.support(); openOptions(fromTitle); }
   }
 
   /* ---------- notes de mise à jour (la plus récente en premier) ---------- */
   const PATCH_NOTES = [
+    { v: '1.0.5', d: ['26 octobre 2026', '26 October 2026'],
+      fr: ['Les Options s’ouvrent aussi depuis l’écran titre.', 'Un nouveau joueur ne voit plus les notes de mise à jour dès son premier lancement.', 'Options : crédits du jeu.'],
+      en: ['Options can now be opened from the title screen too.', 'New players no longer get the patch notes on their very first launch.', 'Options: game credits.'] },
     { v: '1.0.4', d: ['19 octobre 2026', '19 October 2026'],
       fr: ['Options : sauvegarde à exporter ou importer (pour changer d’appareil), signalement de bug, soutien au studio et numéro de version.', 'Le navigateur est invité à garder ta sauvegarde même quand il fait du ménage.'],
       en: ['Options: a save you can export or import (to switch devices), bug reports, studio support and the version number.', 'The browser is asked to keep your save even when it clears space.'] },
@@ -919,7 +925,8 @@
   function patchNotesAuto() {
     let seen = null; try { seen = localStorage.getItem(PN_KEY); } catch (e) { return; }
     if (seen === PATCH_NOTES[0].v) return;
-    if (G.hasSave()) showPatchNotes(); else try { localStorage.setItem(PN_KEY, PATCH_NOTES[0].v); } catch (e) { /* stockage indisponible */ }
+    // la partie est créée dès le chargement : « déjà joué » = l'intro a été vue
+    if (G.hasSave() && G.state.introSeen >= 0) showPatchNotes(); else try { localStorage.setItem(PN_KEY, PATCH_NOTES[0].v); } catch (e) { /* stockage indisponible */ }
   }
 
   function keepScroll() {
