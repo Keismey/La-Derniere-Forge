@@ -1,6 +1,6 @@
 /* Service worker : le jeu fonctionne hors ligne une fois chargé.
    Change VERSION à chaque mise en ligne pour forcer la mise à jour. */
-const VERSION = 'forge-v1.0.6';
+const VERSION = 'forge-v1.0.7';
 const CORE = [
   './', './index.html', './ks-studio.js', './ks-back.js', './css/style.css', './manifest.webmanifest',
   './js/i18n.js', './js/data.js', './js/data_en.js', './js/assets.js', './js/core.js', './js/smelt.js', './js/forge.js', './js/mine.js', './js/combat.js', './js/shop.js', './js/refine.js', './js/main.js',
@@ -12,7 +12,7 @@ self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(CORE.map(f => new Request(f, { cache: 'reload' })))).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== VERSION).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('forge-') && k !== VERSION).map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });
 // réseau d'abord pour le code (mises à jour rapides), cache d'abord pour les images et musiques
 self.addEventListener('fetch', e => {

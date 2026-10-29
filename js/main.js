@@ -1109,7 +1109,11 @@
     backAsk(G.L('Retour à l’écran titre ?', 'Back to the title screen?'), G.L('Ta partie est enregistrée.', 'Your game is saved.'), G.L('Écran titre', 'Title screen'),
       () => { G.save(); G.stopLoop(); G.show('s-title'); buildTitle(); });
   }
-  if (window.KSBack) KSBack.init({ back: onBack, lang: () => (G.lang === 'en' ? 'en' : 'fr') });
+  if (window.KSBack) KSBack.init({
+    back: onBack,
+    lang: () => (G.lang === 'en' ? 'en' : 'fr'),
+    title: () => G.current === 's-title' && G.$('#modal').hidden && G.$('#dialog').hidden
+  });
 
   window.addEventListener('load', () => { boot(); bindHub(G.$('#s-hub')); });
 })();
