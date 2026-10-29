@@ -864,9 +864,10 @@
   async function openOptions(fromTitle) {
     const v = await G.modal({
       title: 'Options', cls: 'opt-card', body: optionsHTML(),
-      buttons: [{ label: G.L('Notes de mise à jour', 'Patch notes'), value: 'pn' }, { label: G.L('Sauvegarde (exporter / importer)', 'Save (export / import)'), value: 'save' },
+      buttons: [{ label: G.L('Sauvegarde (exporter / importer)', 'Save (export / import)'), value: 'save' }, { label: G.L('Notes de mise à jour', 'Patch notes'), value: 'pn' },
+        ...(fromTitle ? [] : [{ label: G.L('Écran titre', 'Title screen'), value: 'title' }]),
         { label: G.L('Signaler un bug', 'Report a bug'), value: 'bug' }, { label: G.L('Soutenir le studio', 'Support the studio'), value: 'sup' },
-        ...(fromTitle ? [] : [{ label: G.L('Écran titre', 'Title screen'), value: 'title' }]), { label: G.L('Fermer', 'Close'), value: true, primary: true }],
+        { label: G.L('Retour au hub', 'Back to the hub'), value: 'hub' }, { label: G.L('Fermer', 'Close'), value: true, primary: true }],
       onOpen: m => {
         const card = m.firstElementChild;   // écouteurs posés sur la carte : ils disparaissent avec elle
         card.addEventListener('change', e => {
@@ -893,10 +894,14 @@
     if (v === 'save' && window.KS) { openOptions(fromTitle); KS.saveDialog({ keys: ['derniere-forge-save-v1'], lang: G.lang === 'en' ? 'en' : 'fr', save: G.save, accent: '#e0892f' }); }
     if (v === 'bug' && window.KS) KS.bug('La Dernière Forge', G.lang === 'en' ? 'en' : 'fr');
     if (v === 'sup' && window.KS) { KS.support(); openOptions(fromTitle); }
+    if (v === 'hub') { G.save(); if (window.KSBack) KSBack.toHub(); }
   }
 
   /* ---------- notes de mise à jour (la plus récente en premier) ---------- */
   const PATCH_NOTES = [
+    { v: '1.0.6', d: ['29 octobre 2026', '29 October 2026'],
+      fr: ['Options : bouton « Retour au hub », et le même ordre que dans les autres jeux du studio.'],
+      en: ['Options: a “Back to the hub” button, in the same order as the studio’s other games.'] },
     { v: '1.0.5', d: ['26 octobre 2026', '26 October 2026'],
       fr: ['Les Options s’ouvrent aussi depuis l’écran titre.', 'Un nouveau joueur ne voit plus les notes de mise à jour dès son premier lancement.', 'Options : crédits du jeu.'],
       en: ['Options can now be opened from the title screen too.', 'New players no longer get the patch notes on their very first launch.', 'Options: game credits.'] },
