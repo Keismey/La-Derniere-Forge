@@ -899,6 +899,9 @@
 
   /* ---------- notes de mise à jour (la plus récente en premier) ---------- */
   const PATCH_NOTES = [
+    { v: '1.0.7', d: ['31 octobre 2026', '31 October 2026'],
+      fr: ['Combat : les actions restent entièrement à l’écran sur les petits téléphones.', 'Boutons plus faciles à toucher (Options, aide, onglets).', 'Téléphone couché : un écran invite à le redresser et le jeu se met en pause.', 'Le zoom du navigateur est de nouveau possible.', 'Au clavier : fenêtres, dialogues, fonderie, trempe, combat et marchandage utilisables.'],
+      en: ['Combat: the actions now stay fully on screen on small phones.', 'Easier-to-tap buttons (Options, help, tabs).', 'Phone held sideways: a screen asks you to turn it upright and the game pauses.', 'Browser zoom works again.', 'Keyboard: windows, dialogues, smelting, quenching, combat and haggling now work.'] },
     { v: '1.0.6', d: ['29 octobre 2026', '29 October 2026'],
       fr: ['Options : bouton « Retour au hub », et le même ordre que dans les autres jeux du studio.'],
       en: ['Options: a “Back to the hub” button, in the same order as the studio’s other games.'] },
