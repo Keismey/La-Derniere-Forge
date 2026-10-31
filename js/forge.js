@@ -148,11 +148,12 @@
     st.tpos = tpos;
 
     const reheatBtn = G.$('#fg-reheat');
-    reheatBtn.addEventListener('pointerdown', e => {
-      e.preventDefault();
+    const reheat = () => {
       if (st.phase !== 'hammer' || st.fire > 0 || st.heat >= 99) return;
       st.fire = FIRE_TIME; G.sfx('bellows'); G.sfx('roar'); G.vibrate(10);
-    });
+    };
+    reheatBtn.addEventListener('pointerdown', e => { e.preventDefault(); reheat(); });
+    G.keyTap(reheatBtn, reheat);
 
     cv.addEventListener('pointerdown', e => {
       e.preventDefault();
@@ -378,6 +379,7 @@
         <button class="btn huge" id="fg-quench" disabled>${G.L('Vers le bac…', 'To the tub…')}</button>`;
       const qb = G.$('#fg-quench');
       qb.addEventListener('pointerdown', e => { e.preventDefault(); if (st.quench.ready) doQuench(false); });
+      G.keyTap(qb, () => { if (st.quench.ready) doQuench(false); });
       // court temps de transition : évite de tremper par erreur en visant « Réchauffer »
       setTimeout(() => {
         if (st.phase !== 'quench') return;
