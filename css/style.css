@@ -314,6 +314,14 @@ small { font-size: .78em; opacity: .8; }
 .cb-info { gap: 6px; }
 .cb-stage { min-height: 220px; }
 .cb-log { text-shadow: 0 1px 3px #000; color: #e9dccb; }
+/* combat sur les écrans bas (petits téléphones, barre du navigateur visible) : la scène rétrécit
+   et le haut se resserre pour que les actions restent entièrement à l'écran */
+@media (max-height: 720px) { .cb-stage { min-height: 0; } }
+@media (max-height: 620px) {
+  .cb-enemy { padding: 6px 16px; }
+  .cb-info { gap: 4px; }
+  .cb-me { padding: 6px 16px; gap: 4px; }
+}
 
 /* dialogues avec portrait */
 .dlg-card { display: flex; gap: 14px; align-items: flex-start; }
