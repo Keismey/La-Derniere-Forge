@@ -274,6 +274,8 @@ small { font-size: .78em; opacity: .8; }
 
 .toast { position: fixed; left: 50%; top: calc(12px + var(--sat)); transform: translate(-50%, -140%); z-index: 40; max-width: calc(100% - 32px); background: #2a221c; border: 1px solid #5a4636; border-radius: 12px; padding: 10px 14px; font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 6px; transition: transform .25s ease; box-shadow: 0 10px 30px rgba(0,0,0,.5); pointer-events: none; }
 .toast.show { transform: translate(-50%, 0); }
+/* bulle vide cachée : sans ça, son bas dépassait en haut de l'écran (et toute la bulle sous l'encoche, une fois installé sur iPhone) */
+.toast:not(.show) { opacity: 0; transition: transform .25s ease, opacity 0s .25s; }   /* opacity et non visibility : le lecteur d'écran annonce toujours les messages */
 .toast.good { border-color: var(--good); }
 
 @media (prefers-reduced-motion: reduce) {
