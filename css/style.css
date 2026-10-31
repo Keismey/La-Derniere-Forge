@@ -508,6 +508,12 @@ img.ico { display: inline-block; object-fit: contain; vertical-align: middle; fl
 .gear-btn svg { filter: drop-shadow(0 1px 1px rgba(0,0,0,.7)); }
 .gear-btn:active { transform: rotate(60deg) scale(.95); }
 .gear-btn:focus-visible { outline: 2px solid var(--ember-hot); outline-offset: 2px; }
+/* cibles tactiles : 44 × 44 px minimum, pour le pouce */
+.gear-btn { width: 44px; height: 44px; }
+.seg-b, .btn.small, .fold-h { min-height: 44px; }
+/* petites icônes rondes (aide « ? », refuser « × ») : taille visible inchangée, zone de toucher élargie à 44 px */
+.help-btn, .x-btn { position: relative; }
+.help-btn::after, .x-btn::after { content: ""; position: absolute; left: 50%; top: 50%; width: 44px; height: 44px; transform: translate(-50%, -50%); }
 .opt-card .opts { gap: 14px; margin: 4px 0 6px; }
 .opt-card .modal-btns .btn { flex: 1 1 100%; }
 .opt-ver { margin: 10px 0 0; font-size: 12px; opacity: .6; text-align: center; }
