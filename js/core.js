@@ -520,13 +520,18 @@
 
   // boucle d'animation gérée (une seule active à la fois)
   let loopFn = null, lastT = 0, rafId = 0;
+  // téléphone couché : l'écran « Tourne ton téléphone » couvre le jeu, le temps s'arrête (mêmes conditions que le CSS de #rot)
+  // (à garder identique à la règle @media de #rot dans css/style.css)
+  const lying = matchMedia('(orientation: landscape) and (max-height: 500px) and (pointer: coarse)');
+  // la musique se tait aussi pendant ce temps
+  lying.addEventListener('change', () => { if (!document.hidden && G.musicPause) G.musicPause(lying.matches); });
   G.loop = function (fn) {
     loopFn = fn; lastT = performance.now();
     cancelAnimationFrame(rafId);
     const step = t => {
       if (!loopFn) return;
       const dt = Math.min(0.05, (t - lastT) / 1000); lastT = t;
-      loopFn(G.paused ? 0 : dt, t / 1000);
+      loopFn(G.paused || lying.matches ? 0 : dt, t / 1000);
       rafId = requestAnimationFrame(step);
     };
     rafId = requestAnimationFrame(step);

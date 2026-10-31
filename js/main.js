@@ -33,6 +33,7 @@
     buildTitle();
     patchNotesAuto();
     G.show('s-title');
+    const rot = G.$('#rot span'); if (rot) rot.textContent = G.L('Tourne ton téléphone', 'Turn your phone upright');
     // service worker (hors artifact)
     if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !window.__ARTIFACT__) {
       navigator.serviceWorker.register('sw.js').catch(() => {});
