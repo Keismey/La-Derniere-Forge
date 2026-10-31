@@ -40,6 +40,7 @@
     }
     document.addEventListener('visibilitychange', () => { if (document.hidden) G.save(); });
     document.addEventListener('pointerdown', () => G.audioInit(), { passive: true });
+    document.addEventListener('keydown', () => G.audioInit());   // au clavier aussi, le son démarre à la première touche
     document.addEventListener('contextmenu', e => { if (!e.target.closest('input')) e.preventDefault(); });
   }
 

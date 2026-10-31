@@ -44,6 +44,7 @@
       G.fx('steam', L.nx, L.ny, { size: 70, life: 0.6, vx: 160, vy: -70, grow: 1.6, alpha: 0.45, rot: Math.random() * 6 });
     };
     G.$('#sm-pump').addEventListener('pointerdown', pump);
+    G.keyTap(G.$('#sm-pump'), pump);
     G.bindHelp(scr, 'smelt');
     G.howto('smelt');
 

@@ -486,6 +486,8 @@
         <span class="qz-ring"><i class="qz-dash" id="cb-qdash"></i><i class="qz-band" id="cb-qband"></i>${atk ? '' : '<i class="qz-shrink" id="cb-qshrink"></i>'}<span class="qz-med">${G.icon(atk ? G.equipped('arme').id : 'bouclier', 50)}</span></span>
         <span class="qz-title">${atk ? G.L('Frapper !', 'Strike!') : G.L('Parer !', 'Parry!')}</span></button>`;
       G.$('#cb-qbtn').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); if (qte) qte.tap(); });
+      G.keyTap(G.$('#cb-qbtn'), () => { if (qte) qte.tap(); });
+      G.kbdFocus(G.$('#cb-qbtn'));   // le bouton choisi au clavier vient de disparaître : le focus passe sur la zone de frappe
     }
     // éclair de couleur sur l'anneau du panneau selon la qualité du geste
     function qzResult(g) {
@@ -517,6 +519,7 @@
         ${FINAL ? `<button class="seal s-out ${en.freed ? 'iron' : 'chain'}" data-a="free" ${!en.freed && me.elan >= 2 ? '' : 'disabled'}><span class="seal-m">${G.icon('serrure', 32)}</span><b>${G.L('Libérer', 'Free')}</b><small>${en.freed ? G.L('Hogar est libre', 'Hogar is free') : G.L('2 élan', '2 momentum')}</small></button>`
           : `<button class="seal s-out iron" data-a="flee" ${fee}><span class="seal-m">${G.icon('fer_cheval', 32)}</span><b>${G.L('Fuir', 'Flee')}</b>${E.boss ? `<small>${G.L('impossible', 'impossible')}</small>` : ''}</button>`}
       </div>`;
+      G.kbdFocus(G.$('.seal.s-core', a));
     }
     function waitAction() {
       return new Promise(res => {

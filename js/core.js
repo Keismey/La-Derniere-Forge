@@ -426,23 +426,64 @@
     toastT = setTimeout(() => { t.className = 'toast'; }, 2400);
   };
 
+  /* ---------- clavier et lecteur d'écran dans les fenêtres ---------- */
+  // élément qui avait le focus avant l'ouverture d'une fenêtre, pour le lui rendre à la fermeture
+  function focusOrigin() {
+    const a = document.activeElement;
+    return a && a !== document.body && !a.closest('#modal, #dialog') ? a : null;
+  }
+  function restoreFocus(el) {
+    // une autre fenêtre a pu s'ouvrir juste après (enchaînement) : elle garde le focus
+    if (!G.$('#modal').hidden || !G.$('#dialog').hidden) return;
+    if (el && el.isConnected && !el.disabled) el.focus({ preventScroll: true });
+  }
+  // Tab et Maj+Tab restent dans la fenêtre
+  function trapTab(e, box) {
+    if (e.key !== 'Tab') return;
+    const f = G.$$('button, input, select, textarea, a[href], [tabindex]:not([tabindex="-1"])', box).filter(x => !x.disabled && x.getClientRects().length);
+    if (!f.length) { e.preventDefault(); return; }
+    const first = f[0], last = f[f.length - 1], a = document.activeElement;
+    if (e.shiftKey && (a === first || a === box)) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && a === last) { e.preventDefault(); first.focus(); }
+  }
+  // boutons de jeu qui réagissent au pointerdown (réactivité au toucher) : Entrée et Espace les actionnent aussi
+  G.keyTap = function (el, fn) {
+    if (!el) return;
+    el.addEventListener('click', e => { if (e.detail === 0) fn(e); });   // detail 0 : clic venu du clavier
+    el.addEventListener('keydown', e => { if (e.repeat && (e.key === 'Enter' || e.key === ' ')) e.preventDefault(); });   // Entrée maintenue : pas de rafale
+  };
+  // dernier mode de saisie : au clavier, le focus suit les boutons que le jeu remplace (combat)
+  G.kbd = false;
+  addEventListener('keydown', e => { if (['Tab', 'Enter', ' ', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) G.kbd = true; }, true);
+  addEventListener('pointerdown', () => { G.kbd = false; }, true);
+  G.kbdFocus = el => {
+    const a = document.activeElement;
+    if (el && G.kbd && (!a || a === document.body || !a.isConnected)) el.focus({ preventScroll: true });
+  };
+
   // fenêtre modale : retourne une promesse résolue avec la valeur du bouton
   G.modal = function (opts) {
     return new Promise(res => {
       const m = G.$('#modal');
       const btns = (opts.buttons || [{ label: 'OK', value: true, primary: true }]).map((b, i) =>
         `<button class="btn ${b.primary ? 'primary' : ''} ${b.danger ? 'danger' : ''}" data-i="${i}" ${b.disabled ? 'disabled' : ''}>${b.label}</button>`).join('');
-      m.innerHTML = `<div class="modal-card ${opts.cls || ''}" role="dialog" aria-modal="true">
-        ${opts.title ? `<h2>${opts.title}</h2>` : ''}<div class="modal-body">${opts.body || ''}</div>
+      const back = focusOrigin();
+      m.innerHTML = `<div class="modal-card ${opts.cls || ''}" role="dialog" aria-modal="true" tabindex="-1"${opts.title ? ' aria-labelledby="modal-h"' : ''}>
+        ${opts.title ? `<h2 id="modal-h">${opts.title}</h2>` : ''}<div class="modal-body">${opts.body || ''}</div>
         <div class="modal-btns">${btns}</div></div>`;
       m.hidden = false;
       if (opts.onOpen) opts.onOpen(m);
+      const card = m.firstElementChild;
+      card.addEventListener('keydown', e => trapTab(e, card));
+      // le lecteur d'écran annonce le titre ; Tab mène aux boutons (sauf si onOpen a déjà placé le focus, ex. champ du nom)
+      if (!card.contains(document.activeElement)) card.focus({ preventScroll: true });
       G.$$('.modal-btns .btn', m).forEach(b => b.addEventListener('click', () => {
         G.sfx('tick');
         const b2 = opts.buttons ? opts.buttons[+b.dataset.i] : { value: true };
         let v = b2.value;
         if (opts.collect) v = { value: v, data: opts.collect(m) };
         m.hidden = true; m.innerHTML = '';
+        restoreFocus(back);
         res(v);
       }));
     });
@@ -471,11 +512,19 @@
       const next = () => {
         G.sfx('page');
         i++;
-        if (i >= lines.length) { d.hidden = true; d.onclick = null; res(); return; }
+        if (i >= lines.length) { d.hidden = true; d.onclick = d.onkeydown = null; restoreFocus(back); res(); return; }
         draw();
       };
+      const back = focusOrigin();
+      d.setAttribute('aria-label', G.L('Histoire', 'Story'));
       d.hidden = false; draw();
+      d.focus({ preventScroll: true });
       d.onclick = next;
+      // au clavier : Entrée ou Espace pour passer à la réplique suivante
+      d.onkeydown = e => {
+        if (e.key === 'Tab') { e.preventDefault(); return; }
+        if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) { e.preventDefault(); next(); }
+      };
     });
   };
 
