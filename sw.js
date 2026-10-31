@@ -1,6 +1,6 @@
 /* Service worker : le jeu fonctionne hors ligne une fois chargé.
    Change VERSION à chaque mise en ligne pour forcer la mise à jour. */
-const VERSION = 'forge-v1.0.9';
+const VERSION = 'forge-v1.0.10';
 const CORE = [
   './', './index.html', './ks-studio.js', './ks-back.js', './css/style.css', './manifest.webmanifest',
   './js/i18n.js', './js/data.js', './js/data_en.js', './js/assets.js', './js/core.js', './js/smelt.js', './js/forge.js', './js/mine.js', './js/combat.js', './js/shop.js', './js/refine.js', './js/main.js',
