@@ -152,6 +152,7 @@
       patience();
       const go = e => { if (e) e.preventDefault(); if (st.phase === 'haggle' && !st.hg.locked) offer(); };
       G.$('#hg-go').addEventListener('pointerdown', go);
+      G.keyTap(G.$('#hg-go'), go);
       G.$('#sh-stage').onpointerdown = e => { if (e.target.closest('button')) return; go(e); };
     }
     function patience() {
