@@ -1,6 +1,6 @@
 /* Service worker : le jeu fonctionne hors ligne une fois chargé.
    Change VERSION à chaque mise en ligne pour forcer la mise à jour. */
-const VERSION = 'forge-v1.0.10';
+const VERSION = 'forge-v1.0.11';
 const CORE = [
   './', './index.html', './ks-studio.js', './ks-back.js', './css/style.css', './manifest.webmanifest',
   './js/i18n.js', './js/data.js', './js/data_en.js', './js/assets.js', './js/core.js', './js/smelt.js', './js/forge.js', './js/mine.js', './js/combat.js', './js/shop.js', './js/refine.js', './js/main.js',
@@ -29,6 +29,8 @@ self.addEventListener('fetch', e => {
   } else {
     e.respondWith(fetch(req.url, { cache: 'no-cache' }).then(res => {
       if (res.ok) { const cp = res.clone(); caches.open(VERSION).then(c => c.put(req, cp)); }
+      // serveur en panne (5xx) : la copie en cache plutôt qu'une page d'erreur
+      if (res.status >= 500) return caches.match(req).then(hit => hit || (req.mode === 'navigate' ? caches.match('./index.html') : null)).then(hit => hit || res);
       return res;
     }).catch(() => caches.match(req).then(hit => hit || caches.match('./index.html'))));
   }
